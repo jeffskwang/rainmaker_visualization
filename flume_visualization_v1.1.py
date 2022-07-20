@@ -116,6 +116,46 @@ def plot_profile(dat_files,indices,x,y_loc):
     plt.tight_layout()
     plt.savefig(parent + '/' + data_folder + '/plot_files/'+'profile_evolution.png',dpi=300)
     plt.close()
+
+#This function plots the averaged-topography profile
+def plot_averaged_profile(dat_files,indices,x):
+    print ('plotting averaged-profile')
+    eta_ini,eta_ini_min,eta_ini_max = read_dat(dat_files[0],20,10)
+    eta_fin,eta_fin_min,eta_fin_max = read_dat(dat_files[-1],20,10)
+
+    plt.figure(3,figsize=(6,5))
+    for i in indices:
+        eta,eta_max,eta_min = read_dat(dat_files[i],20,10)
+        eta_averaged = np.zeros(eta.shape[1])
+        for j in eta.shape[1]:
+            eta_averaged[j] = np.nanmean(eta[:,j])
+        plt.plot(x,eta[int(y_loc/0.5),:],label=dat_files[i][:-86])
+        
+    plt.xlabel('x [mm]')
+    plt.ylabel(r'$\eta$ [mm]')
+    plt.legend(loc='lower left')
+    plt.tight_layout()
+    plt.savefig(parent + '/' + data_folder + '/plot_files/'+'averaged_profile_evolution.png',dpi=300)
+    plt.close()
+
+
+#This function plots the topography cross-section
+def plot_cross_section(dat_files,indices,y,x_loc):
+    print ('plotting cross-section')
+    eta_ini,eta_ini_min,eta_ini_max = read_dat(dat_files[0],20,10)
+    eta_fin,eta_fin_min,eta_fin_max = read_dat(dat_files[-1],20,10)
+
+    plt.figure(4,figsize=(6,5))
+    for i in indices:
+        eta,eta_max,eta_min = read_dat(dat_files[i],20,10)
+        plt.plot(y,eta[:,int(x_loc/0.5)],label=dat_files[i][:-86])
+        
+    plt.xlabel('y [mm]')
+    plt.ylabel(r'$\eta$ [mm]')
+    plt.legend(loc='lower left')
+    plt.tight_layout()
+    plt.savefig(parent + '/' + data_folder + '/plot_files/'+'cross-section_evolution.png',dpi=300)
+    plt.close()
     
 #this function plots the drainage, if you use depression finders, it takes a LONG time if the topography is relatively flat
 def plot_drainage(dat_files,depression_finder_boolean):
@@ -136,7 +176,7 @@ def plot_drainage(dat_files,depression_finder_boolean):
             fr = FlowAccumulator(mg, flow_director='D8')
         fr.run_one_step()
 
-        plt.figure(3,figsize=(6,5))
+        plt.figure(5,figsize=(6,5))
         plt.imshow(np.log(mg.at_node['drainage_area'].reshape(mg.shape)+0.5**2.0),vmin=np.log(0.5**2.),vmax=np.log(500.**2.))
         plt.xlabel('x [mm]')
         plt.ylabel('y [mm]')
@@ -150,7 +190,8 @@ def plot_drainage(dat_files,depression_finder_boolean):
 ###Running Functions
 plot_topography(dat_files)
 plot_profile(dat_files,[0,-1],x,250)
+plot_averaged_profile(dat_files,[0,-1],x)
+plot_cross_section(dat_files,[0,-1],y,250)
 plot_drainage(dat_files,False)
 plot_drainage([dat_files[-1]],True)#warning this can take a long long time, so I'm only running the last plot in the list for now
 print ('done')
-
