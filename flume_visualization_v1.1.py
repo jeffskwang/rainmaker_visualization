@@ -120,6 +120,7 @@ def plot_profile(dat_files,indices,x,y_loc):
 #This function plots the averaged-topography profile
 def plot_averaged_profile(dat_files,indices,x):
     print ('plotting averaged-profile')
+    print ('Do not worry about this error below, it is due to python trying to take a mean of only NaN values.')
     eta_ini,eta_ini_min,eta_ini_max = read_dat(dat_files[0],20,10)
     eta_fin,eta_fin_min,eta_fin_max = read_dat(dat_files[-1],20,10)
 
@@ -127,9 +128,9 @@ def plot_averaged_profile(dat_files,indices,x):
     for i in indices:
         eta,eta_max,eta_min = read_dat(dat_files[i],20,10)
         eta_averaged = np.zeros(eta.shape[1])
-        for j in eta.shape[1]:
+        for j in range(0,eta.shape[1]):
             eta_averaged[j] = np.nanmean(eta[:,j])
-        plt.plot(x,eta[int(y_loc/0.5),:],label=dat_files[i][:-86])
+        plt.plot(x,eta_averaged,label=dat_files[i][:-86])
         
     plt.xlabel('x [mm]')
     plt.ylabel(r'$\eta$ [mm]')
